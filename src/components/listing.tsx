@@ -10,11 +10,12 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import ListingCard from "./listing-card";
+import { ScrollArea } from "./ui/scroll-area";
 
 const ListingSection = () => {
   const [view, setView] = React.useState("grid");
   return (
-    <section className="w-full flex-grow h-full divide-y">
+    <section className="w-full h-full  divide-y flex flex-col overflow-scroll">
       <div className="px-8 py-4 flex flex-row justify-between items-start">
         <div className=" flex flex-row gap-2">
           <ListingIcon className="" />
@@ -58,11 +59,13 @@ const ListingSection = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-10 p-5">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <ListingCard key={index} />
-        ))}
-      </div>
+      <ScrollArea className="w-full flex-grow">
+        <div className="grid grid-cols-2 gap-10 p-5 w-full h-full">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <ListingCard key={index} />
+          ))}
+        </div>
+      </ScrollArea>
     </section>
   );
 };

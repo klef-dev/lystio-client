@@ -5,12 +5,12 @@ import NavBar from "@/components/nav-bar";
 
 export default function Home() {
   return (
-    <main className="w-full min-h-screen flex flex-col divide-y">
-      <header className="divide-y  h-fit">
+    <main className="w-full h-screen flex flex-col divide-y overflow-hidden">
+      <header className="divide-y h-[17%]">
         <NavBar />
         <FilterNav />
       </header>
-      <section className="grid grid-cols-2 flex-grow">
+      <section className="grid grid-cols-2  overflow-hidden h-[82%]">
         <MapView />
         <ListingSection />
       </section>

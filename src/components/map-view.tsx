@@ -11,7 +11,7 @@ const MapView = () => {
   });
 
   return (
-    <section className="w-full">
+    <section className="w-full h-full">
       <Map
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
