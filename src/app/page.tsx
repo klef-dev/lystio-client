@@ -1,4 +1,5 @@
 import FilterNav from "@/components/filter-nav";
+import ListingSection from "@/components/listing";
 import MapView from "@/components/map-view";
 import NavBar from "@/components/nav-bar";
 
@@ -11,6 +12,7 @@ export default function Home() {
       </header>
       <section className="grid grid-cols-2 flex-grow">
         <MapView />
+        <ListingSection />
       </section>
     </main>
   );
