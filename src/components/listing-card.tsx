@@ -2,21 +2,35 @@ import { VerifiedIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { Skeleton } from "./ui/skeleton";
-
-const img =
-  "https://images.unsplash.com/photo-1499955085172-a104c9463ece?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem
+  //   CarouselNext,
+  //   CarouselPrevious
+} from "@/components/ui/carousel";
 
 const ListingCard = ({ property }: { property: PropertyType }) => {
   return (
     <div className="w-full">
-      <div className="w-full aspect-[372/302]  rounded-lg overflow-hidden relative border">
-        <Image
-          src={img}
-          className=" object-cover w-full h-full "
-          alt=""
-          layout="fill"
-        />
-      </div>
+      <Carousel className="w-full max-w-xs">
+        <CarouselContent>
+          {property.media.map((media) => (
+            <CarouselItem key={media.id}>
+              <div className="w-full aspect-[372/302]  rounded-lg overflow-hidden relative border">
+                <Image
+                  src={media.cdnUrl}
+                  blurDataURL={media.bluredDataURL}
+                  className=" object-cover w-full h-full "
+                  alt={property.title}
+                  layout="fill"
+                  placeholder="blur"
+                />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
       <div className="flex flex-col gap-y-3 p-2">
         <div
           className="flex items-center justify-between

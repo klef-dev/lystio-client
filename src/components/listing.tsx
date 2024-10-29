@@ -4,12 +4,11 @@ import React from "react";
 
 import ListingCard, { ListingCardSkeleton } from "./listing-card";
 import { ScrollArea } from "./ui/scroll-area";
-import axios from "axios";
+import request from "@/lib/request";
 
-const endpoint = "https://api.lystio.co/tenement/search";
 
 const Listings = async () => {
-  const { data } = await axios.post(endpoint, {
+  const data = await request.post("/tenement/search", {
     filter: {
       size: [10, 1000],
       rent: [100, 10000],

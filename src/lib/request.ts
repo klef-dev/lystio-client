@@ -1,18 +1,21 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from "axios";
 
 const axios_client = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    headers: {
-        'Access-Control-Allow-Origin': '*',
-        'content-type': 'application/json',
-    },
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "content-type": "application/json"
+  }
 });
 
 const get = async (endpoint: string) => {
-    return axios_client.get(endpoint).then(setResponse);
+  return axios_client.get(endpoint).then(getResponse);
 };
 
-const setResponse = (res: AxiosResponse) => res.data;
+const post = async <T extends object>(endpoint: string, payload: T) =>
+  axios_client.post(endpoint, payload).then(getResponse);
 
-const request = { get };
+const getResponse = (res: AxiosResponse) => res.data;
+
+const request = { get, post };
 export default request;
