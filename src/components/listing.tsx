@@ -13,29 +13,55 @@ const Listings = () => {
 
   const [properties, setProperties] = React.useState<PropertyType[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [currentPage, setCurrentPage] = React.useState(0);
 
-  const getProperties = React.useCallback(async () => {
-    setIsLoading(true);
-    const data = await request.post("/tenement/search", {
-      filter: {
-        rentType: ["rent"],
-        rent: [min, max],
-      },
-    });
-    setIsLoading(false);
-    return data.res;
-  }, [min, max]);
+  const getProperties = React.useCallback(
+    async (page: number) => {
+      setIsLoading(true);
+      const data = await request.post<
+        { res: PropertyType[]; paging: PaginationType },
+        {
+          filter: {
+            rentType: string[];
+            rent: number[];
+            paging: { page: number };
+          };
+        }
+      >("/tenement/search", {
+        filter: {
+          rentType: ["rent"],
+          rent: [+min, +max],
+          paging: {
+            page: page,
+          },
+        },
+      });
+      setIsLoading(false);
+      return data.res;
+    },
+    [min, max]
+  );
 
   React.useEffect(() => {
-    getProperties().then((properties) => {
-      setProperties(properties);
-    });
-  }, [getProperties]);
+    const loadProperties = async () => {
+      const properties = await getProperties(currentPage);
+      setProperties((prev) => [...prev, ...properties]);
+    };
+
+    loadProperties();
+  }, [getProperties, currentPage]);
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoading) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   if (isLoading) return <ListingFallback />;
 
   return (
-    <ScrollArea className="w-full flex-grow">
+    <ScrollArea className="w-full flex-grow" onScroll={handleScroll}>
       <div className="grid grid-cols-2 gap-10 p-5 w-full h-full">
         {properties.map((property) => (
           <ListingCard key={property.id} property={property} />

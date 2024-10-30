@@ -70,3 +70,10 @@ interface PropertyType {
   media: MediaType[];
   tenements: unknown[];
 }
+
+interface PaginationType {
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  totalCount: number;
+}

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { format } from "date-fns";
 
 const ListingCard = ({ property }: { property: PropertyType }) => {
   return (
@@ -76,7 +77,9 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
         <p className="text-xs text-gray-500 font-medium">
           Available From:{" "}
           <span className="text-black font-semibold">
-            {property.availableFrom}
+            {property.availableFrom
+              ? format(new Date(property.availableFrom), "dd-MM-yyyy")
+              : "Immediately"}
           </span>
         </p>
       </div>

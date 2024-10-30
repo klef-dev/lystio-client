@@ -12,12 +12,14 @@ const get = async (endpoint: string) => {
   return axios_client.get(endpoint).then(getResponse);
 };
 
-const post = async <T extends object>(endpoint: string, payload: T) => {
-  console.log({ endpoint, payload });
-  return axios_client.post(endpoint, payload).then(getResponse);
+const post = async <T extends object, P extends object>(
+  endpoint: string,
+  payload: P
+) => {
+  return axios_client.post(endpoint, payload).then(getResponse<T>);
 };
 
-const getResponse = (res: AxiosResponse) => res.data;
+const getResponse = <T>(res: AxiosResponse) => res.data as T;
 
 const request = { get, post };
 export default request;
