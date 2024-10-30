@@ -33,7 +33,11 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
 
   const setSelectListing = (id: number) => {
     const params = new URLSearchParams(searchParams);
-    params.set("id", id.toString());
+    if (selectedId === id.toString()) {
+      params.delete("id");
+    } else {
+      params.set("id", id.toString());
+    }
     router.push(`${pathname}?${params.toString()}`);
   };
 
