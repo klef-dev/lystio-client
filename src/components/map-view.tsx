@@ -140,8 +140,13 @@ const MapView = ({
                     alt={listing.title}
                     layout="fill"
                     className="w-full h-full"
-                    src={listing.media?.[0]?.cdnUrl}
-                    blurDataURL={listing.media?.[0]?.bluredDataURL}
+                    src={
+                      listing.media?.[0]?.cdnUrl || "/images/placeholder.jpg"
+                    }
+                    blurDataURL={
+                      listing.media?.[0]?.bluredDataURL ||
+                      "/images/placeholder.jpg"
+                    }
                   />
                 </div>
                 <div className="space-y-2">
