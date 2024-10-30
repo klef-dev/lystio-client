@@ -21,6 +21,7 @@ import { Button } from "./ui/button";
 import type { LngLatBoundsLike } from "mapbox-gl";
 import { Badge } from "./ui/badge";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 const MapView = ({
   data,
@@ -30,6 +31,9 @@ const MapView = ({
     paging: PaginationType;
   };
 }) => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const { current: mapRef } = useMap();
 
   const [viewState, setViewState] = useState({
@@ -125,71 +129,43 @@ const MapView = ({
             latitude={listing.location[1]}
             onClick={() => handleMarkerClick(listing)}
           >
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <div className="w-full flex flex-col items-center">
-                  <Badge variant={"white"} key={listing.id}>
-                    {listing.rent ? (
-                      <>€{listing.rent.toLocaleString()}</>
-                    ) : (
-                      <>€{listing.rentRange[0].toLocaleString()}</>
-                    )}
-                  </Badge>
-                  <div className="h-4 -mt-1 w-1 bg-white rounded-full" />
-                </div>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-72 bg-white p-2 z-50 rounded-xl space-y-2">
-                <div className="relative aspect-[297/198] w-full rounded-lg overflow-hidden">
-                  <Image
-                    alt={listing.title}
-                    layout="fill"
-                    className="w-full h-full"
-                    src={
-                      listing.media?.[0]?.cdnUrl || "/images/placeholder.jpg"
-                    }
-                    blurDataURL={
-                      listing.media?.[0]?.bluredDataURL ||
-                      "/images/placeholder.jpg"
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-base font-bold line-clamp-1">
-                    {listing.unitType === "single" ? (
-                      <>€{listing.rent.toLocaleString()}</>
-                    ) : (
-                      <>
-                        €{listing.rentRange[0].toLocaleString()} - €
-                        {listing.rentRange[1].toLocaleString()}
-                      </>
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-500 font-semibold line-clamp-2">
-                    {listing.address}
-                  </p>
-                  <ul className="flex flex-row items-center justify-between text-gray-950">
-                    <li className="flex items-center gap-2">
-                      <BoxIcon size={14} className="" />
-                      <span className="text-sm font-medium ">
-                        {listing.size}m²
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <BedDoubleIcon size={14} className="" />
-                      <span className="text-sm font-medium ">
-                        {listing.rooms}beds
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <BathIcon size={14} className="" />
-                      <span className="text-sm font-medium ">
-                        {listing.roomsBath}bath
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
+            {id === listing.id.toString() ? (
+              <HoverCard open={true}>
+                <HoverCardTrigger asChild>
+                  <div className="w-full flex flex-col items-center">
+                    <Badge variant="white" key={listing.id}>
+                      {listing.rent ? (
+                        <>€{listing.rent.toLocaleString()}</>
+                      ) : (
+                        <>€{listing.rentRange[0].toLocaleString()}</>
+                      )}
+                    </Badge>
+                    <div className="h-4 -mt-1 w-1 bg-white rounded-full" />
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-72 bg-white p-2 z-50 rounded-xl space-y-2">
+                  <HoverCardListingContent listing={listing} />
+                </HoverCardContent>
+              </HoverCard>
+            ) : (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <div className="w-full flex flex-col items-center">
+                    <Badge variant="white" key={listing.id}>
+                      {listing.rent ? (
+                        <>€{listing.rent.toLocaleString()}</>
+                      ) : (
+                        <>€{listing.rentRange[0].toLocaleString()}</>
+                      )}
+                    </Badge>
+                    <div className="h-4 -mt-1 w-1 bg-white rounded-full" />
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-72 bg-white p-2 z-50 rounded-xl space-y-2">
+                  <HoverCardListingContent listing={listing} />
+                </HoverCardContent>
+              </HoverCard>
+            )}
           </Marker>
         ))}
       </Map>
@@ -246,5 +222,50 @@ const MapView = ({
     </section>
   );
 };
+
+const HoverCardListingContent = ({ listing }: { listing: PropertyType }) => (
+  <>
+    <div className="relative aspect-[297/198] w-full rounded-lg overflow-hidden">
+      <Image
+        alt={listing.title}
+        layout="fill"
+        className="w-full h-full"
+        src={listing.media?.[0]?.cdnUrl || "/images/placeholder.jpg"}
+        blurDataURL={
+          listing.media?.[0]?.bluredDataURL || "/images/placeholder.jpg"
+        }
+      />
+    </div>
+    <div className="space-y-2">
+      <p className="text-base font-bold line-clamp-1">
+        {listing.unitType === "single" ? (
+          <>€{listing.rent.toLocaleString()}</>
+        ) : (
+          <>
+            €{listing.rentRange[0].toLocaleString()} - €
+            {listing.rentRange[1].toLocaleString()}
+          </>
+        )}
+      </p>
+      <p className="text-xs text-gray-500 font-semibold line-clamp-2">
+        {listing.address}
+      </p>
+      <ul className="flex flex-row items-center justify-between text-gray-950">
+        <li className="flex items-center gap-2">
+          <BoxIcon size={14} className="" />
+          <span className="text-sm font-medium ">{listing.size}m²</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <BedDoubleIcon size={14} className="" />
+          <span className="text-sm font-medium ">{listing.rooms}beds</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <BathIcon size={14} className="" />
+          <span className="text-sm font-medium ">{listing.roomsBath}bath</span>
+        </li>
+      </ul>
+    </div>
+  </>
+);
 
 export default MapView;

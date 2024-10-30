@@ -1,3 +1,4 @@
+"use client";
 import {
   BathIcon,
   BedDoubleIcon,
@@ -20,10 +21,30 @@ import {
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { format, formatDistanceToNow } from "date-fns";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const ListingCard = ({ property }: { property: PropertyType }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const selectedId = searchParams.get("id");
+
+  const setSelectListing = (id: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("id", id.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   return (
-    <div className="w-full">
+    <div
+      className={cn("w-full cursor-pointer", {
+        "border border-primary rounded-xl":
+          selectedId === property.id.toString(),
+      })}
+      onClick={() => setSelectListing(property.id)}
+    >
       <Carousel className="w-full aspect-[372/302]">
         <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-2 group">
           <div className="flex flex-row w-full space-x-1">
@@ -99,7 +120,7 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
         </div>
         <p className="text-base font-bold line-clamp-1">{property.title}</p>
         <p className="text-xs text-gray-500 font-medium line-clamp-2">
-          {property.abstract}
+          {property.address}
         </p>
         <ul className="flex flex-row items-center justify-between">
           <li className="flex items-center gap-2">
