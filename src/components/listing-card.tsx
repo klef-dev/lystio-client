@@ -17,7 +17,7 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
   return (
     <div className="w-full">
       <Carousel className="w-full aspect-[372/302]">
-        <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-3">
+        <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-3 group">
           <div className="flex flex-row w-full space-x-2">
             {Object.values(property.amenitiesTexts)
               .splice(0, 2)
@@ -31,7 +31,7 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
               <BookmarkIcon size={14} />
             </Button>
           </div>
-          <div className="flex flex-row items-center w-full justify-between">
+          <div className="flex flex-row items-center w-full justify-between opacity-0 group-hover:opacity-100">
             <CarouselPrevious />
             <CarouselNext />
           </div>

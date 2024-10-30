@@ -5,7 +5,7 @@ import useSWR from "swr";
 const useListings = (filter: FilterType) => {
   const { data, ...rest } = useSWR(
     [filter],
-    (filter) => fetchListing(filter[0]),
+    ([filter]) => fetchListing(filter),
     {
       keepPreviousData: true,
       refreshInterval: 60000
