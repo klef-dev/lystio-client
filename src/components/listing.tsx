@@ -3,29 +3,17 @@ import React from "react";
 
 import ListingCard, { ListingCardSkeleton } from "./listing-card";
 import { ScrollArea } from "./ui/scroll-area";
-import { useSearchParams } from "next/navigation";
 
-import useListings from "@/hooks/use-listings";
-
-const Listings = () => {
-  const searchParams = useSearchParams();
-  const min = searchParams.get("min") || 0;
-  const max = searchParams.get("max") || 99999;
-
-  const filter = React.useMemo(() => {
-    return {
-      filter: {
-        rentType: ["rent"],
-        rent: [+min, +max],
-        paging: {
-          page: 1
-        }
-      }
-    };
-  }, [max, min]);
-
-  const { data, isLoading } = useListings(filter);
-
+const Listings = ({
+  data,
+  isLoading,
+}: {
+  data?: {
+    res: PropertyType[];
+    paging: PaginationType;
+  };
+  isLoading: boolean;
+}) => {
   if (isLoading) return <ListingFallback />;
 
   return (

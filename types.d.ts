@@ -69,6 +69,9 @@ interface PropertyType {
   id: number;
   media: MediaType[];
   tenements: unknown[];
+  roomsBedRange: number[];
+  roomsBathRange: number[];
+  sizeRange: number[];
 }
 
 interface PaginationType {

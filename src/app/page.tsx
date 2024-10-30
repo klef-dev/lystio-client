@@ -6,14 +6,35 @@ import MapView from "@/components/map-view";
 import NavBar from "@/components/nav-bar";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import useListings from "@/hooks/use-listings";
 import {
   ArrowUpDownIcon,
   Grid3x3Icon,
   LayoutGridIcon,
   ListIcon,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import React from "react";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const min = searchParams.get("min") || 1;
+  const max = searchParams.get("max") || 99999;
+
+  const filter = React.useMemo(() => {
+    return {
+      filter: {
+        rentType: ["rent"],
+        rent: [+min, +max],
+        paging: {
+          page: 1,
+        },
+      },
+    };
+  }, [max, min]);
+
+  const { data, isLoading } = useListings(filter);
+
   return (
     <main className="w-full h-screen flex flex-col divide-y overflow-hidden">
       <header className="divide-y h-[17%]">
@@ -21,7 +42,7 @@ export default function Home() {
         <FilterNav />
       </header>
       <section className="grid grid-cols-2  overflow-hidden h-[82%]">
-        <MapView />
+        <MapView data={data} />
         <section className="w-full h-full  divide-y flex flex-col overflow-scroll">
           <div className="px-8 py-4 flex flex-row justify-between items-start">
             <div className=" flex flex-row gap-2">
@@ -31,7 +52,7 @@ export default function Home() {
                   Listing around me
                 </h2>
                 <p className="text-gray-500 text-sm font-medium">
-                  2,091 properties
+                  {data?.paging?.totalCount} properties
                 </p>
               </div>
             </div>
@@ -39,6 +60,7 @@ export default function Home() {
               <ToggleGroup
                 type="single"
                 className="bg-gray-100 rounded-md p-0.5"
+                value="grid"
               >
                 <ToggleGroupItem
                   value="grid-3"
@@ -64,7 +86,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <Listings />
+          <Listings data={data} isLoading={isLoading} />
         </section>
       </section>
     </main>

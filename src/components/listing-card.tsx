@@ -1,4 +1,11 @@
-import { BookmarkIcon, VerifiedIcon } from "lucide-react";
+import {
+  BathIcon,
+  BedDoubleIcon,
+  BookmarkIcon,
+  BoxIcon,
+  CircleXIcon,
+  VerifiedIcon,
+} from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { Skeleton } from "./ui/skeleton";
@@ -7,18 +14,18 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 const ListingCard = ({ property }: { property: PropertyType }) => {
   return (
     <div className="w-full">
       <Carousel className="w-full aspect-[372/302]">
-        <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-3 group">
-          <div className="flex flex-row w-full space-x-2">
+        <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-2 group">
+          <div className="flex flex-row w-full space-x-1">
             {Object.values(property.amenitiesTexts)
               .splice(0, 2)
               .map((amenity) => (
@@ -27,7 +34,11 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
                 </Badge>
               ))}
             <span className="flex-grow" />
-            <Button variant={"white"} size={"icon-sm"} className="rounded-full">
+            <Button
+              variant={"white"}
+              size={"icon-sm"}
+              className="rounded-full flex-shrink-0"
+            >
               <BookmarkIcon size={14} />
             </Button>
           </div>
@@ -44,7 +55,7 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
                 <Image
                   src={media.cdnUrl}
                   blurDataURL={media.bluredDataURL}
-                  className=" object-cover w-full h-full z-0"
+                  className=" object-cover w-full h-full z-0 rounded-lg"
                   alt={property.title}
                   layout="fill"
                   placeholder="blur"
@@ -52,30 +63,86 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
               </div>
             </CarouselItem>
           ))}
+          <div className="w-full aspect-[372/302] rounded-lg overflow-hidden relative border">
+            <Image
+              src={"/images/placeholder.jpg"}
+              blurDataURL={"/images/placeholder.jpg"}
+              className=" object-cover w-full h-full z-0 rounded-lg"
+              alt={property.title}
+              layout="fill"
+              placeholder="blur"
+            />
+          </div>
         </CarouselContent>
       </Carousel>
       <div className="flex flex-col gap-y-3 p-2">
-        <div
-          className="flex items-center justify-between
-        "
-        >
-          <span className="flex items-center gap-1 text-primary text-sm font-medium">
-            <VerifiedIcon className=" fill-primary stroke-white" size={20} />
-            Verified
+        <div className="flex items-center justify-between">
+          {property.verified ? (
+            <span className="flex items-center gap-1 text-primary text-sm font-medium">
+              <VerifiedIcon className=" fill-primary stroke-white" size={20} />
+              Verified
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-gray-400 text-sm font-medium">
+              <CircleXIcon size={20} />
+              Not Verified
+            </span>
+          )}
+          <span className="text-xs text-gray-500 font-medium text-right">
+            {formatDistanceToNow(new Date(property.createdAt), {
+              addSuffix: true,
+            })}
           </span>
-          <span className="text-xs text-gray-500 font-medium">5 days ago</span>
         </div>
         <p className="text-base font-bold line-clamp-1">{property.title}</p>
         <p className="text-xs text-gray-500 font-medium line-clamp-2">
           {property.abstract}
         </p>
+        <ul className="flex flex-row items-center justify-between">
+          <li className="flex items-center gap-2">
+            <BoxIcon size={14} className="text-gray-400" />
+            <span className="text-xs font-medium text-gray-600">
+              {property.unitType === "single" ? (
+                <>{property.size}m²</>
+              ) : (
+                <>
+                  {property.sizeRange[0]}-{property.sizeRange[1]}m²
+                </>
+              )}
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <BedDoubleIcon size={14} className="text-gray-400" />
+            <span className="text-xs font-medium text-gray-600">
+              {property.unitType === "single" ? (
+                <>{property.rooms}bed</>
+              ) : (
+                <>
+                  {property.roomsBedRange[0]}-{property.roomsBedRange[1]}bed
+                </>
+              )}
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <BathIcon size={14} className="text-gray-400" />
+            <span className="text-xs font-medium text-gray-600">
+              {property.unitType === "single" ? (
+                <>{property.roomsBath}bath</>
+              ) : (
+                <>
+                  {property.roomsBathRange[0]}-{property.roomsBathRange[1]}bath
+                </>
+              )}
+            </span>
+          </li>
+        </ul>
         <p className="text-base font-bold line-clamp-1">
           {property.unitType === "single" ? (
-            <>{property.rent.toLocaleString()} € Single Unit</>
+            <>{property.rent.toLocaleString()} €</>
           ) : (
             <>
               {property.rentRange[0].toLocaleString()} € -{" "}
-              {property.rentRange[1].toLocaleString()} € Multiple Units
+              {property.rentRange[1].toLocaleString()} €
             </>
           )}
         </p>

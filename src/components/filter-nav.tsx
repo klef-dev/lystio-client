@@ -23,7 +23,7 @@ const FilterNav = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [{ min, max }, setPriceRange] = React.useState({
-    min: searchParams.get("min") || 0,
+    min: searchParams.get("min") || 1,
     max: searchParams.get("max") || 99999,
   });
 
