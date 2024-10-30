@@ -3,6 +3,16 @@ import React from "react";
 
 import ListingCard, { ListingCardSkeleton } from "./listing-card";
 import { ScrollArea } from "./ui/scroll-area";
+import { usePathname, useSearchParams } from "next/navigation";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import { createQueryString } from "@/lib/utils";
 
 const Listings = ({
   data,
@@ -22,6 +32,11 @@ const Listings = ({
         {data?.res?.map((property) => (
           <ListingCard key={property.id} property={property} />
         ))}
+        {data?.paging && (
+          <div className="col-span-2">
+            <ListingPagination paging={data?.paging} />
+          </div>
+        )}
       </div>
     </ScrollArea>
   );
@@ -36,3 +51,44 @@ const ListingFallback = () => (
     ))}
   </div>
 );
+
+const ListingPagination = ({ paging }: { paging: PaginationType }) => {
+  const searchParams = useSearchParams();
+
+  const pathname = usePathname();
+
+  const page = +(searchParams.get("page") || 1);
+
+  const { nextURL, prevURL } = React.useMemo(() => {
+    let nextURL = "#",
+      prevURL = "#";
+
+    const queries = Object.fromEntries(searchParams.entries());
+
+    if (page > 1) {
+      prevURL = createQueryString(pathname, { ...queries, page: page - 1 });
+    }
+
+    if (page < paging.pageCount) {
+      nextURL = createQueryString(pathname, { ...queries, page: page + 1 });
+    }
+
+    return { prevURL, nextURL };
+  }, [page, paging.pageCount, pathname, searchParams]);
+
+  return (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href={prevURL} />
+        </PaginationItem>
+        <PaginationItem>
+          Page {page} of {paging.pageCount}
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext prefetch href={nextURL} />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+};
