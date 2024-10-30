@@ -37,6 +37,7 @@ interface PropertyType {
   roomsBath: number;
   size: number;
   rent: number;
+  rentRange: number[];
   rentUtilities: number;
   rentFull: number | null;
   rentDeposit: number | null;

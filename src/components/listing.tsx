@@ -1,43 +1,27 @@
-// https://api.lystio.co/swagger#/Tenements/TenementController_search
-// "use client";
+"use client";
 import React from "react";
 
 import ListingCard, { ListingCardSkeleton } from "./listing-card";
 import { ScrollArea } from "./ui/scroll-area";
 import request from "@/lib/request";
 
+const Listings = () => {
+  const [properties, setProperties] = React.useState<PropertyType[]>([]);
+  const getProperties = React.useCallback(async () => {
+    const data = await request.post("/tenement/search", {
+      filter: {
+        rentType: ["rent"],
+      },
+    });
+    return data.res;
+  }, []);
 
-const Listings = async () => {
-  const data = await request.post("/tenement/search", {
-    filter: {
-      size: [10, 1000],
-      rent: [100, 10000],
-      roomsBed: [0, 99],
-      roomsBath: [0, 99],
-      type: [1],
-      subType: [1],
-      condition: [1],
-      accessibility: [1],
-      rentType: ["rent"],
-      floorType: [1],
-      heatingType: [1],
-      availableNow: true,
-      within: null,
-      bbox: null,
-      near: null,
-      amenities: null
-    },
-    sort: {
-      rent: null,
-      distance: null
-    },
-    paging: {
-      pageSize: 10,
-      page: 0
-    }
-  });
+  React.useEffect(() => {
+    getProperties().then((properties) => {
+      setProperties(properties);
+    });
+  }, [getProperties]);
 
-  const properties: PropertyType[] = data.res;
   return (
     <ScrollArea className="w-full flex-grow">
       <div className="grid grid-cols-2 gap-10 p-5 w-full h-full">

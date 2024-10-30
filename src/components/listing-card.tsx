@@ -1,27 +1,44 @@
-import { VerifiedIcon } from "lucide-react";
+import { BookmarkIcon, VerifiedIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { Skeleton } from "./ui/skeleton";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem
-  //   CarouselNext,
-  //   CarouselPrevious
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 
 const ListingCard = ({ property }: { property: PropertyType }) => {
   return (
     <div className="w-full">
-      <Carousel className="w-full max-w-xs">
-        <CarouselContent>
-          {property.media.map((media) => (
+      <Carousel className="w-full aspect-[372/302]">
+        <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-3">
+          <div className="flex flex-row w-full space-x-2">
+            <Badge variant={"white"}>New</Badge>
+            <Badge variant={"white"}>3D Tour</Badge>
+            <span className="flex-grow" />
+            <Button variant={"white"} size={"icon-sm"} className="rounded-full">
+              <BookmarkIcon size={14} />
+            </Button>
+          </div>
+          <div className="flex flex-row items-center w-full justify-between">
+            <CarouselPrevious />
+            <CarouselNext />
+          </div>
+          <div></div>
+        </div>
+        <CarouselContent className="">
+          {property.media?.map((media) => (
             <CarouselItem key={media.id}>
-              <div className="w-full aspect-[372/302]  rounded-lg overflow-hidden relative border">
+              <div className="w-full aspect-[372/302] rounded-lg overflow-hidden relative border">
                 <Image
                   src={media.cdnUrl}
                   blurDataURL={media.bluredDataURL}
-                  className=" object-cover w-full h-full "
+                  className=" object-cover w-full h-full z-0"
                   alt={property.title}
                   layout="fill"
                   placeholder="blur"
@@ -43,15 +60,24 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
           <span className="text-xs text-gray-500 font-medium">5 days ago</span>
         </div>
         <p className="text-base font-bold line-clamp-1">{property.title}</p>
-        <p className="text-xs text-gray-500 font-medium">
-          Reichsratsstraße 13, 1010 Vienna
+        <p className="text-xs text-gray-500 font-medium line-clamp-2">
+          {property.abstract}
         </p>
         <p className="text-base font-bold line-clamp-1">
-          2,000 € - 5,000 € Multi-units
+          {property.unitType === "single" ? (
+            <>{property.rent.toLocaleString()} € Single Unit</>
+          ) : (
+            <>
+              {property.rentRange[0].toLocaleString()} € -{" "}
+              {property.rentRange[1].toLocaleString()} € Multiple Units
+            </>
+          )}
         </p>
         <p className="text-xs text-gray-500 font-medium">
           Available From:{" "}
-          <span className="text-black font-semibold">Immediately</span>
+          <span className="text-black font-semibold">
+            {property.availableFrom}
+          </span>
         </p>
       </div>
     </div>
