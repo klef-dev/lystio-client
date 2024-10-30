@@ -5,19 +5,33 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverArrow
+  PopoverArrow,
 } from "@/components/ui/popover";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 const FilterNav = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [{ min, max }, setPriceRange] = React.useState({ min: 0, max: 99999 });
+
+  const handleApply = () => {
+    if (min && max) {
+      const params = new URLSearchParams(searchParams);
+      params.set("min", min.toString());
+      params.set("max", max.toString());
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
   return (
     <nav className="">
       <ul className="container mx-auto  py-5 flex items-center space-x-4">
@@ -33,9 +47,7 @@ const FilterNav = () => {
               </li>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Option 1</DropdownMenuItem>
-              <DropdownMenuItem>Option 2</DropdownMenuItem>
-              <DropdownMenuItem>Option 3</DropdownMenuItem>
+              <DropdownMenuItem>{method}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ))}
@@ -43,7 +55,10 @@ const FilterNav = () => {
           <PopoverTrigger asChild>
             <li className="text-sm gap-2 flex items-center cursor-pointer">
               <span>
-                Price: <span className="text-gray-500">€300 - €500</span>
+                Price:{" "}
+                <span className="text-gray-500">
+                  €{min} - €{max}
+                </span>
               </span>
               <ChevronDownIcon size={14} />
             </li>
@@ -55,16 +70,28 @@ const FilterNav = () => {
                 <label htmlFor="min-amount" className="text-xs">
                   min amount
                 </label>
-                <Input placeholder="min amount" type="number" />
+                <Input
+                  placeholder="min amount"
+                  type="number"
+                  value={min}
+                  onChange={(e) => setPriceRange({ max, min: +e.target.value })}
+                />
               </div>
               <div className="gap-1">
                 <label htmlFor="max-amount" className="text-xs">
                   max amount
                 </label>
-                <Input placeholder="max amount" type="number" />
+                <Input
+                  placeholder="max amount"
+                  type="number"
+                  value={max}
+                  onChange={(e) => setPriceRange({ min, max: +e.target.value })}
+                />
               </div>
             </div>
-            <Button className="w-full">Apply</Button>
+            <Button className="w-full" onClick={handleApply}>
+              Apply
+            </Button>
           </PopoverContent>
         </Popover>
 
@@ -86,5 +113,5 @@ const filter_methods = [
   "Beds/baths",
   "Living rooms",
   "Pets",
-  "Deposit"
+  "Deposit",
 ];

@@ -1,6 +1,6 @@
 "use client";
 import FilterNav from "@/components/filter-nav";
-import Listings, { ListingFallback } from "@/components/listing";
+import Listings from "@/components/listing";
 
 import MapView from "@/components/map-view";
 import NavBar from "@/components/nav-bar";
@@ -10,9 +10,8 @@ import {
   ArrowUpDownIcon,
   Grid3x3Icon,
   LayoutGridIcon,
-  ListIcon
+  ListIcon,
 } from "lucide-react";
-import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -39,8 +38,6 @@ export default function Home() {
             <div className="flex gap-1 items-center">
               <ToggleGroup
                 type="single"
-                // value={view}
-                // onValueChange={setView}
                 className="bg-gray-100 rounded-md p-0.5"
               >
                 <ToggleGroupItem
@@ -67,9 +64,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <Suspense fallback={<ListingFallback />}>
-            <Listings />
-          </Suspense>
+          <Listings />
         </section>
       </section>
     </main>
