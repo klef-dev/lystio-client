@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import Map, { NavigationControl, Marker, useMap } from "react-map-gl";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import Map, { NavigationControl, Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import {
@@ -16,6 +17,7 @@ import {
   CommandIcon,
   Layers3Icon,
   PencilIcon,
+  RotateCwIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import type { LngLatBoundsLike } from "mapbox-gl";
@@ -34,7 +36,7 @@ const MapView = ({
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const { current: mapRef } = useMap();
+  const mapRef = useRef(null);
 
   const [viewState, setViewState] = useState({
     latitude: 48.2082,
@@ -68,25 +70,12 @@ const MapView = ({
     ] as LngLatBoundsLike;
   }, []);
 
-  // Fit bounds when listings change
-  useEffect(() => {
-    if (data?.res.length && mapRef) {
-      const bounds = calculateBounds(data?.res);
-      if (bounds) {
-        mapRef.fitBounds(bounds, {
-          padding: { top: 50, bottom: 50, left: 50, right: 50 },
-          duration: 1000,
-        });
-      }
-    }
-  }, [data, mapRef, calculateBounds]);
-
   // Handle marker click
   const handleMarkerClick = useCallback(
     (listing: PropertyType) => {
       if (mapRef) {
         // Zoom to the clicked marker
-        mapRef.flyTo({
+        (mapRef.current as any).getMap().flyTo({
           center: [listing.location[0], listing.location[1]],
           zoom: 14,
           duration: 1000,
@@ -96,10 +85,31 @@ const MapView = ({
     [mapRef]
   );
 
+  // Fit bounds when listings change
+  const handleResetView = useCallback(() => {
+    if (data?.res.length && mapRef.current) {
+      const bounds = calculateBounds(data.res);
+      if (bounds) {
+        (mapRef.current as any).getMap().fitBounds(bounds, {
+          padding: { top: 50, bottom: 50, left: 50, right: 50 },
+          duration: 1000,
+          maxZoom: 15,
+        });
+      }
+    }
+  }, [data?.res, calculateBounds]);
+
+  useEffect(() => {
+    handleResetView();
+    const listing = data?.res.find((listing) => listing.id === Number(id));
+    if (listing) handleMarkerClick(listing);
+  }, [data, handleResetView, handleMarkerClick, id]);
+
   return (
     <section className="w-full h-full relative">
       <Map
         {...viewState}
+        ref={mapRef}
         onMove={(evt) => setViewState(evt.viewState)}
         mapStyle="mapbox://styles/mapbox/satellite-streets-v11"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
@@ -217,6 +227,16 @@ const MapView = ({
               clipRule="evenodd"
             />
           </svg>
+        </Button>
+
+        {/* reset view */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-white hover:bg-gray-100"
+          onClick={handleResetView}
+        >
+          <RotateCwIcon size={20} />
         </Button>
       </div>
     </section>
