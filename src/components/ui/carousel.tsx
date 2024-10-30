@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import useEmblaCarousel, {
-  type UseEmblaCarouselType
+  type UseEmblaCarouselType,
 } from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -28,6 +28,7 @@ type CarouselContextProps = {
   scrollNext: () => void;
   canScrollPrev: boolean;
   canScrollNext: boolean;
+  activeIndex: number;
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -61,12 +62,13 @@ const Carousel = React.forwardRef<
     const [carouselRef, api] = useEmblaCarousel(
       {
         ...opts,
-        axis: orientation === "horizontal" ? "x" : "y"
+        axis: orientation === "horizontal" ? "x" : "y",
       },
       plugins
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
+    const [activeIndex, setActiveIndex] = React.useState(0);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -78,12 +80,20 @@ const Carousel = React.forwardRef<
     }, []);
 
     const scrollPrev = React.useCallback(() => {
+      setActiveIndex((prev) => prev - 1);
       api?.scrollPrev();
     }, [api]);
 
     const scrollNext = React.useCallback(() => {
+      setActiveIndex((prev) => {
+        if (api?.slideNodes().length === activeIndex + 1) {
+          return prev;
+        } else {
+          return prev + 1;
+        }
+      });
       api?.scrollNext();
-    }, [api]);
+    }, [activeIndex, api]);
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -131,7 +141,8 @@ const Carousel = React.forwardRef<
           scrollPrev,
           scrollNext,
           canScrollPrev,
-          canScrollNext
+          canScrollNext,
+          activeIndex,
         }}
       >
         <div
@@ -248,11 +259,35 @@ const CarouselNext = React.forwardRef<
 });
 CarouselNext.displayName = "CarouselNext";
 
+const CarouselIndicator = ({ className }: { className?: string }) => {
+  const { api, activeIndex } = useCarousel();
+
+  return (
+    <div className={cn("flex flex-row items-center gap-1", className)}>
+      {Array.from({ length: (api?.slideNodes().length || 1) - 1 }).map(
+        (_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "transition-all duration-200 ease-in-out rounded-full bg-white",
+              {
+                "size-2.5": activeIndex === i,
+                "size-1.5": activeIndex !== i,
+              }
+            )}
+          />
+        )
+      )}
+    </div>
+  );
+};
+
 export {
   type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext
+  CarouselNext,
+  CarouselIndicator,
 };

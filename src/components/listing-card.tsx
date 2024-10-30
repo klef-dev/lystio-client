@@ -12,6 +12,7 @@ import { Skeleton } from "./ui/skeleton";
 import {
   Carousel,
   CarouselContent,
+  CarouselIndicator,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -46,7 +47,9 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
             <CarouselPrevious />
             <CarouselNext />
           </div>
-          <div></div>
+          <div className="flex items-center justify-center w-full">
+            <CarouselIndicator />
+          </div>
         </div>
         <CarouselContent className="">
           {property.media?.map((media) => (
