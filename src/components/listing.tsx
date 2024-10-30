@@ -3,67 +3,35 @@ import React from "react";
 
 import ListingCard, { ListingCardSkeleton } from "./listing-card";
 import { ScrollArea } from "./ui/scroll-area";
-import request from "@/lib/request";
 import { useSearchParams } from "next/navigation";
+
+import useListings from "@/hooks/use-listings";
 
 const Listings = () => {
   const searchParams = useSearchParams();
   const min = searchParams.get("min") || 0;
   const max = searchParams.get("max") || 99999;
 
-  const [properties, setProperties] = React.useState<PropertyType[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [currentPage, setCurrentPage] = React.useState(0);
-
-  const getProperties = React.useCallback(
-    async (page: number) => {
-      setIsLoading(true);
-      const data = await request.post<
-        { res: PropertyType[]; paging: PaginationType },
-        {
-          filter: {
-            rentType: string[];
-            rent: number[];
-            paging: { page: number };
-          };
+  const filter = React.useMemo(() => {
+    return {
+      filter: {
+        rentType: ["rent"],
+        rent: [+min, +max],
+        paging: {
+          page: 1
         }
-      >("/tenement/search", {
-        filter: {
-          rentType: ["rent"],
-          rent: [+min, +max],
-          paging: {
-            page: page,
-          },
-        },
-      });
-      setIsLoading(false);
-      return data.res;
-    },
-    [min, max]
-  );
-
-  React.useEffect(() => {
-    const loadProperties = async () => {
-      const properties = await getProperties(currentPage);
-      setProperties((prev) => [...prev, ...properties]);
+      }
     };
+  }, [max, min]);
 
-    loadProperties();
-  }, [getProperties, currentPage]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoading) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
+  const { data, isLoading } = useListings(filter);
 
   if (isLoading) return <ListingFallback />;
 
   return (
-    <ScrollArea className="w-full flex-grow" onScroll={handleScroll}>
+    <ScrollArea className="w-full flex-grow">
       <div className="grid grid-cols-2 gap-10 p-5 w-full h-full">
-        {properties.map((property) => (
+        {data?.res?.map((property) => (
           <ListingCard key={property.id} property={property} />
         ))}
       </div>

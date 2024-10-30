@@ -77,3 +77,21 @@ interface PaginationType {
   pageSize: number;
   totalCount: number;
 }
+
+interface MapPropertyType {
+  count: number;
+  gj: string;
+  id: number;
+  pt: [number, number];
+  rentRange: number[];
+  sizeRange: number[];
+}
+
+interface FilterType {
+  filter: {
+    rentType: string[];
+    rent: number[];
+    paging?: { page: number };
+  };
+  zoom?: number;
+}

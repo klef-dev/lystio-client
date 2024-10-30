@@ -7,7 +7,7 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
+  CarouselPrevious
 } from "@/components/ui/carousel";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -19,8 +19,13 @@ const ListingCard = ({ property }: { property: PropertyType }) => {
       <Carousel className="w-full aspect-[372/302]">
         <div className="absolute  w-full z-10  flex flex-col   justify-between h-full p-3">
           <div className="flex flex-row w-full space-x-2">
-            <Badge variant={"white"}>New</Badge>
-            <Badge variant={"white"}>3D Tour</Badge>
+            {Object.values(property.amenitiesTexts)
+              .splice(0, 2)
+              .map((amenity) => (
+                <Badge variant={"white"} size={"sm"} key={amenity}>
+                  {amenity}
+                </Badge>
+              ))}
             <span className="flex-grow" />
             <Button variant={"white"} size={"icon-sm"} className="rounded-full">
               <BookmarkIcon size={14} />
